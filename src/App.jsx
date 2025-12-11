@@ -20,11 +20,13 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const fetchMovies = async () => {
+    const fetchMovies = async (query = "") => {
       setIsLoading(true);
       setErrorMessage("");
       try {
-        const endpoint = `${API_BASE_URL}/discover/movie?language=ru-RU&sort_by=popularity.desc`;
+        const endpoint = query
+          ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+          : `${API_BASE_URL}/discover/movie?language=ru-RU&sort_by=popularity.desc`;
 
         const response = await fetch(endpoint, API_OPTIONS);
 
@@ -48,8 +50,8 @@ const App = () => {
         setIsLoading(false);
       }
     };
-    fetchMovies();
-  }, []); // запустится один раз на старте генерации страницы
+    fetchMovies(searchTerm);
+  }, [searchTerm]); // запустится один раз на старте генерации страницы
 
   return (
     <main>
@@ -63,7 +65,7 @@ const App = () => {
             посмотра без суеты
           </h1>
 
-          <Search searchTerm={searchTerm} setsearchTerm={setSearchTerm} />
+          <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
 
         <section className="all-movies">
