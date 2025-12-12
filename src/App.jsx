@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useDebounce } from "react-use";
 import Search from "./components/Search";
 import Spinner from "./components/Spinner";
 import MovieCard from "./components/MovieCard";
@@ -18,6 +19,9 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+  useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]); // теперь useEffect будет отрабатывать не сразу, а через 0.5 сек
 
   useEffect(() => {
     const fetchMovies = async (query = "") => {
@@ -50,8 +54,8 @@ const App = () => {
         setIsLoading(false);
       }
     };
-    fetchMovies(searchTerm);
-  }, [searchTerm]); // запустится один раз на старте генерации страницы
+    fetchMovies(debouncedSearchTerm);
+  }, [debouncedSearchTerm]); // запускается каждый раз когда меняется searchTerm (но теперь нет из-за useDebounced)
 
   return (
     <main>
